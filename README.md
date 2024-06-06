@@ -8,8 +8,12 @@ mruby devkit
 
 测试：
 
-Mac Intel X64 ✅
+MacOS 
+* AMD64 ✅
+* ARM64 ✅
 
+Linux
+* AMD64 
 ---
 
 # 使用方法
