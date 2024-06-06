@@ -12,11 +12,16 @@ MacOS
 * AMD64 ✅
 * ARM64 ✅
 
-Linux
-* AMD64 
+Debian/Ubuntu/Mint Linux
+* AMD64 ✅
 ---
 
 # 使用方法
+
+## 0. 系统需要拥有 
+
+Ruby3 提供 Rake
+
 
 ## 1. rake -T 查看可用命令
 
@@ -46,3 +51,4 @@ rake run[enter]           # run program
 
 - [ ] 交叉编译
 - [ ] 添加基本的 gem
+- [ ] 将编译器编译成 portable mruby 跳过本地编译

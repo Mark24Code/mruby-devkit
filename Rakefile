@@ -6,6 +6,19 @@ Include = "compiler/#{MRubyName}/build/host/include"
 MRuby = "compiler/#{MRubyName}/build/host/bin/mruby"
 MRbc = "compiler/#{MRubyName}/build/host/bin/mrbc"
 
+def osname
+  case RUBY_PLATFORM.downcase
+  when /darwin/
+   "darwin"
+  when /linux/
+   "linux"
+  when /mswin|win32|mingw|cygwin/
+   "win"
+  else
+    nil
+  end
+end
+
 
 def download(url)
   sh "wget -O .tmp/#{MRubyName}.zip #{url}"
@@ -36,12 +49,19 @@ end
 
 desc "install"
 task :install do
-  sh "brew install gcc wget"
+  case osname
+  when "darwin"
+    sh "brew install gcc@14 wget"
+  when "linux"
+    sh "sudo apt install gcc wget"
+  else
+    raise "[Error] OS not support!"
+  end
 end
 
 desc "init"
 task :init => [:install, :"compiler:download", :"compiler:build"  ] do
-  sh "brew install gcc@14 wget"
+  puts "init compiler"
 end
 
 
@@ -82,11 +102,18 @@ main(void)
   return 0;
 }
 
-
 CODE
+
     f.puts template
+
   end
 
-  sh "gcc-14 -std=c99 -I./#{Include} ./build/_wrapper.c -o ./build/#{output} ./#{Lib}/libmruby.a -lm"
+  gcc_cmd = 'gcc'
+  case osname
+  when "darwin"
+    gcc_cmd = 'gcc-14'
+  end
+
+  sh "#{gcc_cmd} -std=c99 -I./#{Include} ./build/_wrapper.c -o ./build/#{output} ./#{Lib}/libmruby.a -lm"
   sh "rm ./build/#{enter_basename}.c && rm ./build/_wrapper.c"
 end
