@@ -2,9 +2,7 @@
 
 mruby devkit
 
-灵感来自于 Golang 可以编译语言成为二进制。
-
-使用 MRuby。DevKit 借助 Rake 可以方便的把 Ruby 代码简化编译成二进制产物。
+灵感来自于 Golang 可以编译为二进制可执行文件。 devkit 提供一个简易的脚手架，使用 Ruby 程序也可以打包成二进制可执行文件。
 
 ---
 
