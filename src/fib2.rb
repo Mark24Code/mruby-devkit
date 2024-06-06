@@ -14,4 +14,4 @@ def fib(n)
   fib_n
 end
 
-puts fib(800)
+puts fib(80)
