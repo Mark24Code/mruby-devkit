@@ -64,12 +64,19 @@ task :init => [:install, :"compiler:download", :"compiler:build"  ] do
   puts "init compiler"
 end
 
+desc "merge program"
+task :merge, [:enter] do |t, args|
+  enter = args[:enter]
+  rbfiles = Dir.glob("src/lib/*.rb")
+  sh "cat #{rbfiles.join(" ")} src/#{enter} > build/#{enter}"
+end
 
 desc "run program. default use src/main.rb"
 task :run, [:enter] do |t, args|
   enter = args[:enter] || 'main.rb'
-
-  sh "#{MRuby} src/#{enter}"
+  sh "rm -rf build && mkdir build"
+  sh "rake 'merge[#{enter}]'"
+  sh "#{MRuby} build/#{enter}"
 end
 
 desc "build program. default use main.rb -> main.out"
@@ -82,10 +89,9 @@ task :build, [:enter, :output] do |t, args|
     output = args[:output]
   end
 
-
   sh "rm -rf build && mkdir build"
-  sh "#{MRbc} -B__ruby_code src/#{enter_basename}.rb"
-  sh "mv ./src/#{enter_basename}.c ./build/"
+  sh "rake 'merge[#{enter}]'"
+  sh "#{MRbc} -B__ruby_code build/#{enter_basename}.rb"
   File.open("./build/_wrapper.c", "w") do |f|
 template = <<-CODE
 #include <mruby.h>
@@ -115,5 +121,5 @@ CODE
   end
 
   sh "#{gcc_cmd} -std=c99 -I./#{Include} ./build/_wrapper.c -o ./build/#{output} ./#{Lib}/libmruby.a -lm"
-  sh "rm ./build/#{enter_basename}.c && rm ./build/_wrapper.c"
+  sh "rm ./build/#{enter_basename}.c && rm ./build/_wrapper.c && rm ./build/#{enter_basename}.rb"
 end

@@ -8,20 +8,22 @@ mruby devkit
 
 测试：
 
-MacOS 
-* AMD64 ✅
-* ARM64 ✅
+MacOS
+
+- AMD64 ✅
+- ARM64 ✅
 
 Debian/Ubuntu/Mint Linux
-* AMD64 ✅
+
+- AMD64 ✅
+
 ---
 
 # 使用方法
 
-## 0. 系统需要拥有 
+## 0. 系统需要拥有
 
 Ruby3 提供 Rake
-
 
 ## 1. rake -T 查看可用命令
 
@@ -52,3 +54,15 @@ rake run[enter]           # run program
 - [ ] 交叉编译
 - [ ] 添加基本的 gem
 - [ ] 将编译器编译成 portable mruby 跳过本地编译
+- [x] 多文件
+
+## 约定
+
+- `src/main.rb` 是入口文件
+- `src/lib/*.rb` 是依赖文件
+
+程序会把 `lib/*.rb` 合并 最后和 main.rb 合成一个文件，进行 build
+
+这对程序的组织、复杂度都有会对应的要求。需要自己控制复杂的依赖关系。
+
+没有引入额外复杂的 makefile，也不想耦合进入 MRuby 的构建过程。
