@@ -9,6 +9,8 @@ MRBC = "#{MRUBY_DIR}/build/host/bin/mrbc"
 MRUBY_BUILD_CONFIG = "./mruby.conf.rb"
 MGEM_SPEC = "./conf.rb"
 
+BUILD_DIR = "./build"
+
 APP_NAME = "app"
 
 def osname
@@ -51,4 +53,17 @@ namespace :mruby do
     puts "init mruby #{MRUBY_NAME}"
   end
 
+end
+
+
+desc "merge program"
+task :init_build do
+  sh "rm -rf #{BUILD_DIR}; mkdir #{BUILD_DIR}"
+end
+
+
+desc "merge program"
+task :merge => [:init_build] do
+  rbfiles = Dir.glob("src/lib/*.rb")
+  sh "cat #{rbfiles.join(" ")} src/main.rb > build/main.rb"
 end
