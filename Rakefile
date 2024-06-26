@@ -136,19 +136,12 @@ CODE
 end
 
 
-desc "package as mgem bin"
-task :pkg_mgem_bin do
-  gem_dir = "#{MGEM_BIN_SAVE_DIR}/mgem-bin-#{APP_NAME}"
-  sh "rm -rf #{gem_dir}; mkdir -p #{gem_dir}/tools"
-  sh "cp #{BUILD_DIR}/*.c #{BUILD_DIR}/*.h  #{gem_dir}/tools"
-  sh "cp ./conf.rb #{gem_dir}/mrbgem.rake"
-end
 
 desc "package as mgem bin"
 task :pkg_mgem_bin do
   gem_dir = "#{MGEM_BIN_SAVE_DIR}/mruby-bin-#{APP_NAME}"
-  sh "rm -rf #{gem_dir}; mkdir -p #{gem_dir}/tools"
-  sh "cp #{BUILD_DIR}/*.c #{BUILD_DIR}/*.h  #{gem_dir}/tools"
+  sh "rm -rf #{gem_dir}; mkdir -p #{gem_dir}/tools/#{APP_NAME}"
+  sh "cp #{BUILD_DIR}/*.c #{BUILD_DIR}/*.h  #{gem_dir}/tools/#{APP_NAME}"
   sh "cp ./conf.rb #{gem_dir}/mrbgem.rake"
 end
 
