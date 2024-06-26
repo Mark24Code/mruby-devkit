@@ -1,10 +1,9 @@
+MRUBY_NAME = "3.3.0"
+MRUBY_URL = "https://github.com/mruby/mruby/archive/#{MRUBY_NAME}.zip"
 
-MRubyURL = "https://github.com/mruby/mruby/archive/3.3.0.zip"
-MRubyName = "mruby-3.3.0"
-Lib = "compiler/#{MRubyName}/build/host/lib"
-Include = "compiler/#{MRubyName}/build/host/include"
-MRuby = "compiler/#{MRubyName}/build/host/bin/mruby"
-MRbc = "compiler/#{MRubyName}/build/host/bin/mrbc"
+MRUBY_DIR = "./mruby"
+MRUBY = "#{MRUBY_DIR}/#{MRUBY_NAME}/build/host/bin/mruby"
+MRBC = "#{MRUBY_DIR}/#{MRUBY_NAME}/build/host/bin/mrbc"
 
 def osname
   case RUBY_PLATFORM.downcase
@@ -20,106 +19,25 @@ def osname
 end
 
 
-def download(url)
-  sh "wget -O .tmp/#{MRubyName}.zip #{url}"
-end
-
-def unzip(filename)
-  sh "tar -xzvf #{filename}"
-end
-
-
-namespace :compiler do
+namespace :mruby do
   desc "download mruby"
   task :download do
-    sh "rm -rf .tmp && rm -rf ./compiler/#{MRubyName}"
-    sh "mkdir .tmp"
-    download(MRubyURL)
-    sh "cd .tmp && unzip #{MRubyName}.zip"
-    # filename = File.basename(MRubyName)
-    sh "mv ./.tmp/#{MRubyName} ./compiler/#{MRubyName}"
+    sh "rm -rf .tmp ; rm -rf #{MRUBY_DIR}/#{MRUBY_NAME}"
+    sh "mkdir .tmp; mkdir -p #{MRUBY_DIR}"
+    sh "wget -O .tmp/#{MRUBY_NAME}.zip #{MRUBY_URL}"
+    sh "unzip -x ./.tmp/#{MRUBY_NAME}.zip -d ./.tmp"
+    sh "mv ./.tmp/mruby-#{MRUBY_NAME} #{MRUBY_DIR}/#{MRUBY_NAME}"
     sh "rm -rf .tmp "
   end
 
   desc "build mruby"
   task :build do
-    sh "cd compiler/#{MRubyName} && rake"
-  end
-end
-
-desc "install"
-task :install do
-  case osname
-  when "darwin"
-    sh "brew install gcc@14 wget"
-  when "linux"
-    sh "sudo apt install gcc wget"
-  else
-    raise "[Error] OS not support!"
-  end
-end
-
-desc "init"
-task :init => [:install, :"compiler:download", :"compiler:build"  ] do
-  puts "init compiler"
-end
-
-desc "merge program"
-task :merge, [:enter] do |t, args|
-  enter = args[:enter]
-  rbfiles = Dir.glob("src/lib/*.rb")
-  sh "cat #{rbfiles.join(" ")} src/#{enter} > build/#{enter}"
-end
-
-desc "run program. default use src/main.rb"
-task :run, [:enter] do |t, args|
-  enter = args[:enter] || 'main.rb'
-  sh "rm -rf build && mkdir build"
-  sh "rake 'merge[#{enter}]'"
-  sh "#{MRuby} build/#{enter}"
-end
-
-desc "build program. default use main.rb -> main.out"
-task :build, [:enter, :output] do |t, args|
-  enter = args[:enter] || 'main.rb'
-  enter_basename = File.basename(enter, '.*')
-
-  output = args[:enter] ? enter_basename : 'main.out'
-  if args[:output]
-    output = args[:output]
+    sh "cd #{MRUBY_DIR}/#{MRUBY_NAME} && rake"
   end
 
-  sh "rm -rf build && mkdir build"
-  sh "rake 'merge[#{enter}]'"
-  sh "#{MRbc} -B__ruby_code build/#{enter_basename}.rb"
-  File.open("./build/_wrapper.c", "w") do |f|
-template = <<-CODE
-#include <mruby.h>
-#include <mruby/irep.h>
-#include "#{enter_basename}.c"
-
-int
-main(void)
-{
-  mrb_state *mrb = mrb_open();
-  if (!mrb) { /* handle error */ }
-  mrb_load_irep(mrb, __ruby_code);
-  mrb_close(mrb);
-  return 0;
-}
-
-CODE
-
-    f.puts template
-
+  desc "init"
+  task :init => [:"mruby:download", :"mruby:build"  ] do
+    puts "init mruby #{MRUBY_NAME}"
   end
 
-  gcc_cmd = 'gcc'
-  case osname
-  when "darwin"
-    gcc_cmd = 'gcc-14'
-  end
-
-  sh "#{gcc_cmd} -std=c99 -I./#{Include} ./build/_wrapper.c -o ./build/#{output} ./#{Lib}/libmruby.a -lm"
-  sh "rm ./build/#{enter_basename}.c && rm ./build/_wrapper.c && rm ./build/#{enter_basename}.rb"
 end
