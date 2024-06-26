@@ -6,8 +6,10 @@ MRUBY_URL = "https://github.com/mruby/mruby/archive/#{MRUBY_NAME}.zip"
 MRUBY_DIR = "#{COMPILER_DIR}/#{MRUBY_NAME}"
 MRUBY = "#{MRUBY_DIR}/build/host/bin/mruby"
 MRBC = "#{MRUBY_DIR}/build/host/bin/mrbc"
-MRUBY_BUILD_CONFIG = "./mruby.build.config"
-MGEM_SPEC = "./mgem.spec"
+MRUBY_BUILD_CONFIG = "./mruby.conf.rb"
+MGEM_SPEC = "./conf.rb"
+
+APP_NAME = "app"
 
 def osname
   case RUBY_PLATFORM.downcase
@@ -36,16 +38,16 @@ namespace :mruby do
 
   desc "build mruby"
   task :build do
-    sh "cd #{MRUBY_DIR} && rake MRUBY_CONFIG=myconfig"
+    sh "cd #{MRUBY_DIR} && rake MRUBY_CONFIG=#{APP_NAME}_config"
   end
 
   desc "replace mruby build config"
   task :build_config do
-    sh "cp #{MRUBY_BUILD_CONFIG} #{MRUBY_DIR}/build_config/myconfig.rb"
+    sh "cp #{MRUBY_BUILD_CONFIG} #{MRUBY_DIR}/build_config/#{APP_NAME}_config.rb"
   end
 
   desc "init"
-  task :init => [:"mruby:download", :"mruby:build_config", :"mruby:build"  ] do
+  task :init => [:"mruby:download", :"mruby:build_config"  ] do
     puts "init mruby #{MRUBY_NAME}"
   end
 
