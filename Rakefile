@@ -67,3 +67,8 @@ task :merge => [:init_build] do
   rbfiles = Dir.glob("src/lib/*.rb")
   sh "cat #{rbfiles.join(" ")} src/main.rb > build/main.rb"
 end
+
+desc "run program"
+task :run => [:merge, :"mruby:build"] do
+  sh "#{MRUBY} build/main.rb"
+end
