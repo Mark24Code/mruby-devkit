@@ -1,17 +1,22 @@
 MRUBY_NAME = "3.3.0"
 
+PROJECT_DIR = "./"
 COMPILER_DIR = "./mruby"
+SOURCE_DIR = "./src"
+SOURCE_LIB_DIR = "./src/lib"
+BUILD_DIR = "./build"
+CACHE_DIR = "./.cache"
 
 MRUBY_URL = "https://github.com/mruby/mruby/archive/#{MRUBY_NAME}.zip"
 MRUBY_DIR = "#{COMPILER_DIR}/#{MRUBY_NAME}"
+MRUBY_BIN = "#{MRUBY_DIR}/build/host/bin"
 MRUBY = "#{MRUBY_DIR}/build/host/bin/mruby"
 MRBC = "#{MRUBY_DIR}/build/host/bin/mrbc"
 MRUBY_BUILD_CONFIG = "./mruby.conf.rb"
 MGEM_SPEC = "./conf.rb"
 
-BUILD_DIR = "./build"
-CACHE_DIR = "./.cache"
 PKG_C_NAME = "_usercode"
+MGEM_BIN_SAVE_DIR = "#{MRUBY_DIR}/examples/mrbgems"
 
 APP_NAME = "app"
 
@@ -42,7 +47,7 @@ namespace :mruby do
 
   desc "build mruby"
   task :build do
-    sh "cd #{MRUBY_DIR} && rake MRUBY_CONFIG=#{APP_NAME}_config"
+    sh "cd #{MRUBY_DIR} && rake"
   end
 
   desc "replace mruby build config"
@@ -51,8 +56,13 @@ namespace :mruby do
   end
 
   desc "init"
-  task :init => [:"mruby:download", :"mruby:build_config"  ] do
+  task :init => [:"mruby:download", :"mruby:build" ] do
     puts "init mruby #{MRUBY_NAME}"
+  end
+
+  desc "custom config build mruby"
+  task :custom_build do
+    sh "cd #{MRUBY_DIR} && rake MRUBY_CONFIG=#{APP_NAME}_config"
   end
 
 end
@@ -126,7 +136,34 @@ CODE
 end
 
 
+desc "package as mgem bin"
+task :pkg_mgem_bin do
+  gem_dir = "#{MGEM_BIN_SAVE_DIR}/mgem-bin-#{APP_NAME}"
+  sh "rm -rf #{gem_dir}; mkdir -p #{gem_dir}/tools"
+  sh "cp #{BUILD_DIR}/*.c #{BUILD_DIR}/*.h  #{gem_dir}/tools"
+  sh "cp ./conf.rb #{gem_dir}/mrbgem.rake"
+end
+
+desc "package as mgem bin"
+task :pkg_mgem_bin do
+  gem_dir = "#{MGEM_BIN_SAVE_DIR}/mruby-bin-#{APP_NAME}"
+  sh "rm -rf #{gem_dir}; mkdir -p #{gem_dir}/tools"
+  sh "cp #{BUILD_DIR}/*.c #{BUILD_DIR}/*.h  #{gem_dir}/tools"
+  sh "cp ./conf.rb #{gem_dir}/mrbgem.rake"
+end
+
+
+
+
 desc "build program"
-task :build => [:build_merge, :"mruby:build"] do
-  sh "#{MRUBY} build/main.rb"
+task :build => [:build_merge, :build_to_c, :"mruby:build_config", :pkg_mgem_bin, :"mruby:custom_build"] do
+  sh "mv #{MRUBY_BIN}/#{APP_NAME} #{BUILD_DIR}/"
+end
+
+
+desc "clean"
+task :clean do
+  sh "rm -rf #{COMPILER_DIR} && mkdir #{COMPILER_DIR}"
+  sh "rm -rf #{BUILD_DIR} && mkdir #{BUILD_DIR}"
+  sh "rm -rf #{CACHE_DIR} && mkdir #{CACHE_DIR}"
 end

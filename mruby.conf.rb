@@ -8,7 +8,10 @@ MRuby::Build.new do |conf|
   #   g.cc.flags << '-g' # append cflags in this gem
   # end
   # conf.gem 'examples/mrbgems/c_and_ruby_extension_example'
-  # conf.gem 'examples/mrbgems/mruby-bin-hello'
+
+
+  # TODO  app name
+  conf.gem 'examples/mrbgems/mruby-bin-app'
   # conf.gem :core => 'mruby-eval'
   # conf.gem :mgem => 'mruby-onig-regexp'
   # conf.gem :mgem => 'mruby-curses' do |g|
