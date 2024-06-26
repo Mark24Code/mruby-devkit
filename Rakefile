@@ -11,6 +11,7 @@ MGEM_SPEC = "./conf.rb"
 
 BUILD_DIR = "./build"
 CACHE_DIR = "./.cache"
+PKG_C_NAME = "_usercode"
 
 APP_NAME = "app"
 
@@ -82,6 +83,46 @@ end
 desc "run program"
 task :run => [:cache_merge, :"mruby:build"] do
   sh "#{MRUBY} build/main.rb"
+end
+
+desc "build to c code"
+task :build_to_c do
+
+  CODE_ENTER = "__ruby_code"
+
+  sh "#{MRBC} -B#{CODE_ENTER} #{BUILD_DIR}/main.rb && mv #{BUILD_DIR}/main.c #{BUILD_DIR}/#{PKG_C_NAME}.c"
+
+  File.open("#{BUILD_DIR}/#{PKG_C_NAME}.h", "w") do |f|
+template = <<-CODE
+#include <stdint.h>
+extern const uint8_t #{CODE_ENTER}[];
+CODE
+
+  f.puts template
+
+  end
+
+  File.open("#{BUILD_DIR}/#{APP_NAME}.c", "w") do |f|
+template = <<-CODE
+#include <mruby.h>
+#include <mruby/irep.h>
+#include "#{PKG_C_NAME}.h"
+
+int
+main(void)
+{
+  mrb_state *mrb = mrb_open();
+  if (!mrb) { /* handle error */ }
+  mrb_load_irep(mrb, #{CODE_ENTER});
+  mrb_close(mrb);
+  return 0;
+}
+
+CODE
+
+    f.puts template
+
+  end
 end
 
 
