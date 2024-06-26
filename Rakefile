@@ -10,6 +10,7 @@ MRUBY_BUILD_CONFIG = "./mruby.conf.rb"
 MGEM_SPEC = "./conf.rb"
 
 BUILD_DIR = "./build"
+CACHE_DIR = "./.cache"
 
 APP_NAME = "app"
 
@@ -56,19 +57,35 @@ namespace :mruby do
 end
 
 
-desc "merge program"
+desc "init develop cache dir"
+task :init_cache do
+  sh "rm -rf #{CACHE_DIR}; mkdir #{CACHE_DIR}"
+end
+
+desc "init build dir"
 task :init_build do
   sh "rm -rf #{BUILD_DIR}; mkdir #{BUILD_DIR}"
 end
 
-
-desc "merge program"
-task :merge => [:init_build] do
+desc "merge program in cache"
+task :cache_merge => [:init_cache] do
   rbfiles = Dir.glob("src/lib/*.rb")
-  sh "cat #{rbfiles.join(" ")} src/main.rb > build/main.rb"
+  sh "cat #{rbfiles.join(" ")} src/main.rb > #{CACHE_DIR}/main.rb"
+end
+
+desc "merge program in build"
+task :build_merge => [:init_build] do
+  rbfiles = Dir.glob("src/lib/*.rb")
+  sh "cat #{rbfiles.join(" ")} src/main.rb > #{BUILD_DIR}/main.rb"
 end
 
 desc "run program"
-task :run => [:merge, :"mruby:build"] do
+task :run => [:cache_merge, :"mruby:build"] do
+  sh "#{MRUBY} build/main.rb"
+end
+
+
+desc "build program"
+task :build => [:build_merge, :"mruby:build"] do
   sh "#{MRUBY} build/main.rb"
 end
