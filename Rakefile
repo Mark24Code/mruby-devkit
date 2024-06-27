@@ -166,10 +166,11 @@ end
 desc "build program"
 task :build => [:"mruby:init", :build_merge, :build_to_c, :"mruby:build_config", :"mruby:custom_build"] do
   sh "cc -std=c99 -I#{MRUBY_INCLUDE} #{BUILD_DIR}/*.c -o #{BUILD_DIR}/#{APP_NAME} #{MRUBY_LIB}/libmruby.a -lm"
-  sh "mkdir -p #{BUILD_DIR}/portable/"
-  sh "cp #{MRUBY_BIN}/mruby #{BUILD_DIR}/portable/"
-  sh "mv #{BUILD_DIR}/main.rb #{BUILD_DIR}/portable/"
-  sh "rm #{BUILD_DIR}/*.h; rm #{BUILD_DIR}/*.c"
+  ## TODO portable need gems
+  # sh "mkdir -p #{BUILD_DIR}/portable/"
+  # sh "cp #{MRUBY_BIN}/mruby #{BUILD_DIR}/portable/"
+  # sh "mv #{BUILD_DIR}/main.rb #{BUILD_DIR}/portable/"
+  sh "rm #{BUILD_DIR}/*.h; rm #{BUILD_DIR}/*.c; rm #{BUILD_DIR}/*.rb"
   sh "tar -czvf app.tar.gz #{BUILD_DIR}"
 end
 
