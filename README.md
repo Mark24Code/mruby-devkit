@@ -16,6 +16,7 @@ MacOS
 Debian/Ubuntu/Mint Linux
 
 - AMD64 ✅
+- ARM64 ✅
 
 ---
 
@@ -29,31 +30,36 @@ Ruby3 提供 Rake
 
 ```
 ➜  build git:(main) rake -T
-rake build[enter,output]  # build program
-rake compiler:build       # build mruby
-rake compiler:download    # download mruby
-rake init                 # init
-rake install              # install
-rake run[enter]           # run program
+rake build               # build program
+rake build_merge         # merge program in build
+rake build_to_c          # build to c code
+rake cache_merge         # merge program in cache
+rake clean               # clean
+rake init_build          # init build dir
+rake init_cache          # init develop cache dir
+rake mruby:build         # build mruby
+rake mruby:build_config  # replace mruby build config
+rake mruby:custom_build  # custom config build mruby
+rake mruby:download      # download mruby
+rake mruby:init          # init
+rake run                 # run program
 ```
 
-## 2.初次使用
+## 1.模仿 golang 的 go run
 
-`rake init` 初始化编译器
+`rake run`
 
-## 3.模仿 golang 的 go run
+## 2.模仿 golang 的 go build
 
-`rake 'run[main.rb]'`
+`rake build`
 
-## 4.模仿 golang 的 go build
+## 3.交叉编译的包
 
-`rake 'build[main.rb]'`
+借助 Github Action 在 main 分支推送后，查看 Action 构建任务，下载产物
 
 ## TODO
 
-- [ ] 交叉编译
-- [ ] 添加基本的 gem
-- [ ] 将编译器编译成 portable mruby 跳过本地编译
+- [x] 交叉编译
 - [x] 多文件
 
 ## 约定

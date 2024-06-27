@@ -2,3 +2,4 @@
 mruby
 build
 .cache
+*.tar.gz
