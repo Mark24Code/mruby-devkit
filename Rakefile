@@ -170,6 +170,7 @@ task :build => [:"mruby:init", :build_merge, :build_to_c, :"mruby:build_config",
   sh "cp #{MRUBY_BIN}/mruby #{BUILD_DIR}/portable/"
   sh "mv #{BUILD_DIR}/main.rb #{BUILD_DIR}/portable/"
   sh "rm #{BUILD_DIR}/*.h; rm #{BUILD_DIR}/*.c"
+  sh "tar -czvf #{BUILD_DIR}/linux.tar.gz #{BUILD_DIR}"
 end
 
 
@@ -197,7 +198,7 @@ namespace :release do
     system("docker container create --name linux-arm64-01 linux")
     system("mkdir -p ./release/linux/arm64")
     system("docker cp linux-arm64-01:/mruby-devkit/build ./release/linux/arm64")
-    # system("docker container rm -f linux-arm64-01")
+    system("docker container rm -f '/linux-arm64-01'")
     system("tar -czvf ./release/linux-arm64.tar.gz ./release/linux/arm64")
   end
 end
