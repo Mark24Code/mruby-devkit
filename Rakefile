@@ -15,10 +15,10 @@ MRBC = "#{MRUBY_DIR}/build/host/bin/mrbc"
 MRUBY_BUILD_CONFIG = "./mruby.conf.rb"
 MGEM_SPEC = "./conf.rb"
 
-PKG_C_NAME = "_usercode"
+PKG_C_NAME = "usercode"
 MGEM_BIN_SAVE_DIR = "#{MRUBY_DIR}/examples/mrbgems"
 
-APP_NAME = "app"
+APP_NAME = "hello"
 
 def osname
   case RUBY_PLATFORM.downcase
@@ -102,21 +102,21 @@ task :build_to_c do
 
   sh "#{MRBC} -B#{CODE_ENTER} #{BUILD_DIR}/main.rb && mv #{BUILD_DIR}/main.c #{BUILD_DIR}/#{PKG_C_NAME}.c"
 
-  File.open("#{BUILD_DIR}/#{PKG_C_NAME}.h", "w") do |f|
-template = <<-CODE
-#include <stdint.h>
-extern const uint8_t #{CODE_ENTER}[];
-CODE
+#   File.open("#{BUILD_DIR}/#{PKG_C_NAME}.h", "w") do |f|
+# template = <<-CODE
+# #include <stdint.h>
+# extern const uint8_t #{CODE_ENTER}[];
+# CODE
 
-  f.puts template
+#   f.puts template
 
-  end
+#   end
 
   File.open("#{BUILD_DIR}/#{APP_NAME}.c", "w") do |f|
 template = <<-CODE
 #include <mruby.h>
 #include <mruby/irep.h>
-#include "#{PKG_C_NAME}.h"
+extern const uint8_t #{CODE_ENTER}[];
 
 int
 main(void)
@@ -141,7 +141,8 @@ desc "package as mgem bin"
 task :pkg_mgem_bin do
   gem_dir = "#{MGEM_BIN_SAVE_DIR}/mruby-bin-#{APP_NAME}"
   sh "rm -rf #{gem_dir}; mkdir -p #{gem_dir}/tools/#{APP_NAME}"
-  sh "cp #{BUILD_DIR}/*.c #{BUILD_DIR}/*.h  #{gem_dir}/tools/#{APP_NAME}"
+  sh "cp #{BUILD_DIR}/*.c  #{gem_dir}/tools/#{APP_NAME}"
+  # sh "cp #{BUILD_DIR}/*.h  #{gem_dir}/tools/#{APP_NAME}"
   sh "cp ./conf.rb #{gem_dir}/mrbgem.rake"
 end
 
