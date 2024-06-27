@@ -10,6 +10,11 @@ MRuby::Build.new do |conf|
   # conf.gem 'examples/mrbgems/c_and_ruby_extension_example'
   # conf.gem :core => 'mruby-eval'
   # conf.gem :mgem => 'mruby-onig-regexp'
+  conf.gem :mgem => 'mruby-curses' do |g|
+    g.cc.include_paths << '/opt/homebrew/opt/ncurses/include'
+    g.linker.libraries = %w(panel ncurses)
+    g.linker.library_paths = ["/opt/homebrew/opt/ncurses/lib"]
+  end
   # conf.gem :github => 'mattn/mruby-onig-regexp'
   # conf.gem :git => 'git@github.com:mattn/mruby-onig-regexp.git', :branch => 'master', :options => '-v'
 
