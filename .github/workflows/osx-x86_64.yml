@@ -21,6 +21,8 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: build x86_64
         run: |
           ls -al
