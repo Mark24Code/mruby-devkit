@@ -10,8 +10,6 @@ MRuby::Build.new do |conf|
   # conf.gem 'examples/mrbgems/c_and_ruby_extension_example'
 
 
-  # TODO  app name
-  conf.gem 'examples/mrbgems/mruby-bin-hello'
   # conf.gem :core => 'mruby-eval'
   # conf.gem :mgem => 'mruby-onig-regexp'
   # conf.gem :mgem => 'mruby-curses' do |g|
@@ -23,7 +21,7 @@ MRuby::Build.new do |conf|
   # conf.gem :git => 'git@github.com:mattn/mruby-onig-regexp.git', :branch => 'master', :options => '-v'
 
   # include the GEM box
-  # conf.gembox 'default'
+  conf.gembox 'default'
 
 
   # C compiler settings

@@ -12,6 +12,9 @@ MRUBY_DIR = "#{COMPILER_DIR}/#{MRUBY_NAME}"
 MRUBY_BIN = "#{MRUBY_DIR}/build/host/bin"
 MRUBY = "#{MRUBY_DIR}/build/host/bin/mruby"
 MRBC = "#{MRUBY_DIR}/build/host/bin/mrbc"
+MRUBY_LIB = "#{MRUBY_DIR}/build/host/lib"
+MRUBY_INCLUDE = "#{MRUBY_DIR}/build/host/include"
+
 MRUBY_BUILD_CONFIG = "./mruby.conf.rb"
 MGEM_SPEC = "./conf.rb"
 
@@ -102,17 +105,7 @@ task :build_to_c do
 
   sh "#{MRBC} -B#{CODE_ENTER} #{BUILD_DIR}/main.rb && mv #{BUILD_DIR}/main.c #{BUILD_DIR}/#{PKG_C_NAME}.c"
 
-#   File.open("#{BUILD_DIR}/#{PKG_C_NAME}.h", "w") do |f|
-# template = <<-CODE
-# #include <stdint.h>
-# extern const uint8_t #{CODE_ENTER}[];
-# CODE
-
-#   f.puts template
-
-#   end
-
-  File.open("#{BUILD_DIR}/#{APP_NAME}.c", "w") do |f|
+  File.open("#{BUILD_DIR}/main.c", "w") do |f|
 template = <<-CODE
 #include <mruby.h>
 #include <mruby/irep.h>
@@ -136,22 +129,9 @@ CODE
 end
 
 
-
-desc "package as mgem bin"
-task :pkg_mgem_bin do
-  gem_dir = "#{MGEM_BIN_SAVE_DIR}/mruby-bin-#{APP_NAME}"
-  sh "rm -rf #{gem_dir}; mkdir -p #{gem_dir}/tools/#{APP_NAME}"
-  sh "cp #{BUILD_DIR}/*.c  #{gem_dir}/tools/#{APP_NAME}"
-  # sh "cp #{BUILD_DIR}/*.h  #{gem_dir}/tools/#{APP_NAME}"
-  sh "cp ./conf.rb #{gem_dir}/mrbgem.rake"
-end
-
-
-
-
 desc "build program"
-task :build => [:build_merge, :build_to_c, :"mruby:build_config", :pkg_mgem_bin, :"mruby:custom_build"] do
-  sh "mv #{MRUBY_BIN}/#{APP_NAME} #{BUILD_DIR}/"
+task :build => [:build_merge, :build_to_c, :"mruby:build_config", :"mruby:custom_build"] do
+  sh "cc -std=c99 -I#{MRUBY_INCLUDE} #{BUILD_DIR}/*.c -o #{BUILD_DIR}/#{APP_NAME} #{MRUBY_LIB}/libmruby.a -lm"
 end
 
 
