@@ -1,4 +1,4 @@
-name: Ubuntu arm64
+name: Raspbian aarch64
 
 on:
   push:
@@ -9,10 +9,10 @@ on:
 env:
   PKG_DATE: 20240627
   PLATFORM: linux
-  ARCHITECTURES: arm64
+  ARCHITECTURES: aarch64
 
 jobs:
-  make-linux-arm64:
+  make-linux-aarch64:
     strategy:
       matrix:
         os: [self-hosted]
@@ -26,12 +26,12 @@ jobs:
         run: |
           echo "GEM_HOME=$HOME/.gem" >> $GITHUB_ENV
           echo "PATH=$HOME/.gem/bin:$PATH" >> $GITHUB_ENV
-      - name: build amd64
+      - name: build aarch64
         run: |
           ls -al
           gem install rake --user-install
           rake build
-      - name: "Upload Artifact- linux amd64"
+      - name: "Upload Artifact- linux aarch64"
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ env.PKG_DATE }}-${{env.PLATFORM}}-${{env.ARCHITECTURES}}.tar.gz
