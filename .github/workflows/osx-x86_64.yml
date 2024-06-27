@@ -23,11 +23,11 @@ jobs:
     steps:
       - name: build x86_64
         run: |
-          ls
-          gem install rake
-          rake build
-      - name: "Upload Artifact- osx x86_64"
-        uses: actions/upload-artifact@v3
-        with:
-          name: app-${{ env.PKG_DATE }}-osx-x86_64.tar.gz
-          path: build/linux.tar.gz
+          ls -al
+          # gem install rake
+          # rake build
+      # - name: "Upload Artifact- osx x86_64"
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: app-${{ env.PKG_DATE }}-osx-x86_64.tar.gz
+      #     path: build/linux.tar.gz
