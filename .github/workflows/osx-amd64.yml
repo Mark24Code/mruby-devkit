@@ -13,7 +13,7 @@ env:
   DEVELOPER_DIR: /Applications/Xcode_14.2.app/Contents/Developer
 
 jobs:
-  make-osx-x86_64:
+  make-osx-amd64:
     strategy:
       matrix:
         os: [macos-12]
