@@ -1,4 +1,4 @@
-name: MacOS x86_64
+name: MacOS amd64
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 env:
   PKG_DATE: 20240627
   PLATFORM: osx
-  ARCHITECTURES: x86_64
+  ARCHITECTURES: amd64
   DEVELOPER_DIR: /Applications/Xcode_14.2.app/Contents/Developer
 
 jobs:
@@ -23,12 +23,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: build x86_64
+      - name: build amd64
         run: |
           ls -al
           gem install rake
           rake build
-      - name: "Upload Artifact- osx x86_64"
+      - name: "Upload Artifact- osx amd64"
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ env.PKG_DATE }}-osx-${{env.ARCHITECTURES}}.tar.gz
