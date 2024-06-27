@@ -15,7 +15,7 @@ jobs:
   make-linux-amd64:
     strategy:
       matrix:
-        os: [alpine]
+        os: [ubuntu-latest]
         ruby-version: [3.3.3]
       fail-fast: false
     runs-on: ${{ matrix.os }}
