@@ -1,4 +1,4 @@
-name: Alpine Musl - amd64
+name: Ubuntu - amd64
 
 on:
   push:
