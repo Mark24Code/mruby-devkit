@@ -15,11 +15,11 @@ MRuby Devkit 是一个开箱即用的脚手架。 基于 MRuby 将你的 Ruby �
 ## 前置运行环境
 
 * GCC/Clang
-* make
-* git
-* Ruby3，且安装了 Rake
+* Make
+* Git
+* Ruby3
+  * Rake 安装 `gem install rake`
 
-> `gem install rake`
 
 
 ## 约定
