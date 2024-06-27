@@ -1,0 +1,31 @@
+name: MacOS x86_64
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PKG_DATE: 20240627
+  PLATFORM: osx
+  ARCHITECTURES: x86_64
+  DEVELOPER_DIR: /Applications/Xcode_14.2.app/Contents/Developer
+
+jobs:
+  make-osx-x86_64:
+    strategy:
+      matrix:
+        os: [macos-12]
+        ruby-version: [3.3.3]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: build x86_64
+        run: |
+          rake build
+      - name: "Upload Artifact- osx x86_64"
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-${{ env.PKG_DATE }}-osx-x86_64.tar.gz
+          path: release/linux*.tar.gz

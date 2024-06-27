@@ -8,6 +8,7 @@ SOURCE_DIR = "./src"
 SOURCE_LIB_DIR = "./src/lib"
 BUILD_DIR = "./build"
 CACHE_DIR = "./.cache"
+DOCKER_DIR = "./docker"
 
 MRUBY_URL = "https://github.com/mruby/mruby/archive/#{MRUBY_NAME}.zip"
 MRUBY_DIR = "#{COMPILER_DIR}/#{MRUBY_NAME}"
@@ -177,4 +178,26 @@ task :clean do
   sh "rm -rf #{COMPILER_DIR} && mkdir #{COMPILER_DIR}"
   sh "rm -rf #{BUILD_DIR} && mkdir #{BUILD_DIR}"
   sh "rm -rf #{CACHE_DIR} && mkdir #{CACHE_DIR}"
+end
+
+namespace :release do
+  desc "linux:amd64"
+  task :"linux:amd64" do
+    system("docker buildx build --platform linux/amd64 -f #{DOCKER_DIR}/Dockerfile.linux -t linux-amd64 .")
+    system("docker container create --name linux-amd64-01 linux")
+    system("mkdir -p ./release/linux/amd64")
+    system("docker cp linux-amd64-01:/mruby-devkit/build ./release/linux/amd64")
+    system("docker container rm -f '/linux-amd64-01'")
+    system("tar -czvf ./release/linux-amd64.tar.gz ./release/linux/amd64")
+  end
+
+  desc "linux:arm64"
+  task :"linux:arm64" do
+    system("docker buildx build --platform linux/arm64 -f #{DOCKER_DIR}/Dockerfile.linux -t linux-arm64 .")
+    system("docker container create --name linux-arm64-01 linux")
+    system("mkdir -p ./release/linux/arm64")
+    system("docker cp linux-arm64-01:/mruby-devkit/build ./release/linux/arm64")
+    # system("docker container rm -f linux-arm64-01")
+    system("tar -czvf ./release/linux-arm64.tar.gz ./release/linux/arm64")
+  end
 end
