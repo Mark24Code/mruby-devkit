@@ -62,17 +62,21 @@ end
 namespace :mruby do
   desc "download mruby"
   task :download do
-    sh "rm -rf .tmp ; rm -rf #{MRUBY_DIR}"
-    sh "mkdir .tmp; mkdir -p #{COMPILER_DIR}"
-    sh "wget -O .tmp/#{MRUBY_NAME}.zip #{MRUBY_URL}"
-    sh "unzip -x ./.tmp/#{MRUBY_NAME}.zip -d ./.tmp"
-    sh "mv ./.tmp/mruby-#{MRUBY_NAME} #{MRUBY_DIR}"
-    sh "rm -rf .tmp "
+    if !File.exist?("#{MRUBY_BIN}/mruby")
+      sh "rm -rf .tmp ; rm -rf #{MRUBY_DIR}"
+      sh "mkdir .tmp; mkdir -p #{COMPILER_DIR}"
+      sh "wget -O .tmp/#{MRUBY_NAME}.zip #{MRUBY_URL}"
+      sh "unzip -x ./.tmp/#{MRUBY_NAME}.zip -d ./.tmp"
+      sh "mv ./.tmp/mruby-#{MRUBY_NAME} #{MRUBY_DIR}"
+      sh "rm -rf .tmp "
+    end
   end
 
   desc "build mruby"
   task :build do
-    sh "cd #{MRUBY_DIR} && rake"
+    if !File.exist?("#{MRUBY_BIN}/mruby")
+      sh "cd #{MRUBY_DIR} && rake"
+    end
   end
 
   desc "replace mruby build config"
@@ -84,7 +88,6 @@ namespace :mruby do
 
   desc "init"
   task :init => [:"mruby:download", :"mruby:build" ] do
-
     if !File.exist? MRUBY_BUILD_CONFIG
       sh "cp #{MRUBY_DIR}/build_config/default.rb #{MRUBY_BUILD_CONFIG}"
     end
@@ -160,7 +163,7 @@ end
 
 
 desc "build program"
-task :build => [:build_merge, :build_to_c, :"mruby:build_config", :"mruby:custom_build"] do
+task :build => [:"mruby:init", :build_merge, :build_to_c, :"mruby:build_config", :"mruby:custom_build"] do
   sh "cc -std=c99 -I#{MRUBY_INCLUDE} #{BUILD_DIR}/*.c -o #{BUILD_DIR}/#{APP_NAME} #{MRUBY_LIB}/libmruby.a -lm"
   sh "mkdir -p #{BUILD_DIR}/portable/"
   sh "cp #{MRUBY_BIN}/mruby #{BUILD_DIR}/portable/"
