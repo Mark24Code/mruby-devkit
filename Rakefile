@@ -21,7 +21,7 @@ MGEM_SPEC = "./conf.rb"
 PKG_C_NAME = "usercode"
 MGEM_BIN_SAVE_DIR = "#{MRUBY_DIR}/examples/mrbgems"
 
-APP_NAME = "hello"
+APP_NAME = "app"
 
 def osname
   case RUBY_PLATFORM.downcase
