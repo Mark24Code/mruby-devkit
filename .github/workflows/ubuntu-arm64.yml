@@ -15,7 +15,7 @@ jobs:
   make-linux-arm64:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [self-hosted]
         ruby-version: [3.3.3]
       fail-fast: false
     runs-on: ${{ matrix.os }}
