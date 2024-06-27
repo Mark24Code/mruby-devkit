@@ -170,7 +170,7 @@ task :build => [:"mruby:init", :build_merge, :build_to_c, :"mruby:build_config",
   sh "cp #{MRUBY_BIN}/mruby #{BUILD_DIR}/portable/"
   sh "mv #{BUILD_DIR}/main.rb #{BUILD_DIR}/portable/"
   sh "rm #{BUILD_DIR}/*.h; rm #{BUILD_DIR}/*.c"
-  sh "tar -czvf --exclude=app.tar.gz #{BUILD_DIR}/app.tar.gz #{BUILD_DIR}"
+  sh "tar -czvf app.tar.gz #{BUILD_DIR}"
 end
 
 
