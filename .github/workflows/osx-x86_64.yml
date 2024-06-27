@@ -29,7 +29,7 @@ jobs:
           gem install rake
           rake build
       - name: "Upload Artifact- osx x86_64"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: app-${{ env.PKG_DATE }}-osx-x86_64.tar.gz
+          name: app-${{ env.PKG_DATE }}-osx-${{env.ARCHITECTURES}}.tar.gz
           path: build/linux.tar.gz
