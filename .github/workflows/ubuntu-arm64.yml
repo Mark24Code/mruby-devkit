@@ -25,7 +25,7 @@ jobs:
       - name: build amd64
         run: |
           ls -al
-          gem install rake
+          sudo gem install rake
           rake build
       - name: "Upload Artifact- osx amd64"
         uses: actions/upload-artifact@v4
