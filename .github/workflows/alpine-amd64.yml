@@ -1,4 +1,4 @@
-name: MacOS arm64
+name: Alpine Musl - amd64
 
 on:
   push:
@@ -8,27 +8,26 @@ on:
 
 env:
   PKG_DATE: 20240627
-  PLATFORM: osx
-  ARCHITECTURES: arm64
-  DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
+  PLATFORM: linux
+  ARCHITECTURES: amd64
 
 jobs:
-  make-osx-arm64:
+  make-linux-amd64:
     strategy:
       matrix:
-        os: [macos-14]
+        os: [alpine]
         ruby-version: [3.3.3]
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: build arm64
+      - name: build amd64
         run: |
           ls -al
           gem install rake
           rake build
-      - name: "Upload Artifact- osx arm64"
+      - name: "Upload Artifact- osx amd64"
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ env.PKG_DATE }}-${{env.PLATFORM}}-${{env.ARCHITECTURES}}.tar.gz
