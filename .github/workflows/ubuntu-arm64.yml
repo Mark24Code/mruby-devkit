@@ -22,10 +22,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Set up Rubygems
+        run: |
+          echo "GEM_HOME=$HOME/.gem" >> $GITHUB_ENV
+          echo "PATH=$HOME/.gem/bin:$PATH" >> $GITHUB_ENV
       - name: build amd64
         run: |
           ls -al
-          sudo gem install rake
+          gem install rake --user-install
           rake build
       - name: "Upload Artifact- linux amd64"
         uses: actions/upload-artifact@v4
