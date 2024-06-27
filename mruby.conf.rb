@@ -8,21 +8,13 @@ MRuby::Build.new do |conf|
   #   g.cc.flags << '-g' # append cflags in this gem
   # end
   # conf.gem 'examples/mrbgems/c_and_ruby_extension_example'
-
-
   # conf.gem :core => 'mruby-eval'
   # conf.gem :mgem => 'mruby-onig-regexp'
-  # conf.gem :mgem => 'mruby-curses' do |g|
-  #   g.cc.include_paths << '/usr/local/opt/ncurses/include' # append cflags in this gem
-  #   g.linker.library_paths = ['/usr/local/opt/ncurses/lib'] # append cflags in this gem
-  #   g.linker.libraries = %w(panel ncurses) # append cflags in this gem
-  # end
   # conf.gem :github => 'mattn/mruby-onig-regexp'
   # conf.gem :git => 'git@github.com:mattn/mruby-onig-regexp.git', :branch => 'master', :options => '-v'
 
   # include the GEM box
   conf.gembox 'default'
-
 
   # C compiler settings
   # conf.cc do |cc|
@@ -35,19 +27,22 @@ MRuby::Build.new do |conf|
   #   cc.compile_options = %Q[%{flags} -MMD -o "%{outfile}" -c "%{infile}"]
   # end
 
-  # conf.cc do |cc|
-  #   cc.include_paths = ["#{root}/include"]
-  # end
-
   # mrbc settings
   # conf.mrbc do |mrbc|
   #   mrbc.compile_options = "-g -B%{funcname} -o-" # The -g option is required for line numbers
   # end
 
-  # # Linker settings
+  # Linker settings
   # conf.linker do |linker|
-  #   linker.libraries = %w("m")
-  #   linker.library_paths = ["#{root}/build/host/lib/"]
+  #   linker.command = ENV['LD'] || 'gcc'
+  #   linker.flags = [ENV['LDFLAGS'] || []]
+  #   linker.flags_before_libraries = []
+  #   linker.libraries = %w()
+  #   linker.flags_after_libraries = []
+  #   linker.library_paths = []
+  #   linker.option_library = '-l%s'
+  #   linker.option_library_path = '-L%s'
+  #   linker.link_options = %Q[%{flags} -o "%{outfile}" %{objs} %{libs}]
   # end
 
   # Archiver settings

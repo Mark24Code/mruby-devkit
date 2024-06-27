@@ -55,11 +55,13 @@ namespace :mruby do
 
   desc "replace mruby build config"
   task :build_config do
+    # TODO hash code 一样就跳过复制
     sh "cp #{MRUBY_BUILD_CONFIG} #{MRUBY_DIR}/build_config/#{APP_NAME}_config.rb"
   end
 
   desc "init"
   task :init => [:"mruby:download", :"mruby:build" ] do
+    sh "cp #{MRUBY_DIR}/build_config/default.rb #{MRUBY_BUILD_CONFIG}"
     puts "init mruby #{MRUBY_NAME}"
   end
 
@@ -132,6 +134,7 @@ end
 desc "build program"
 task :build => [:build_merge, :build_to_c, :"mruby:build_config", :"mruby:custom_build"] do
   sh "cc -std=c99 -I#{MRUBY_INCLUDE} #{BUILD_DIR}/*.c -o #{BUILD_DIR}/#{APP_NAME} #{MRUBY_LIB}/libmruby.a -lm"
+  sh "rm #{BUILD_DIR}/*.h; rm #{BUILD_DIR}/*.c; rm #{BUILD_DIR}/*.rb"
 end
 
 
