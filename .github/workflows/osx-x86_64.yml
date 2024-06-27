@@ -26,8 +26,8 @@ jobs:
       - name: build x86_64
         run: |
           ls -al
-          # gem install rake
-          # rake build
+          gem install rake
+          rake build
       # - name: "Upload Artifact- osx x86_64"
       #   uses: actions/upload-artifact@v3
       #   with:
