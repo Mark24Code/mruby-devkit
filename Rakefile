@@ -35,7 +35,7 @@ def file_md5(file_path)
 end
 
 def file_content_change?(file1, file2)
-  if !File.exist?(file2)
+  if !File.exist?(file1) || !File.exist?(file2)
     return true
   end
 
@@ -93,7 +93,9 @@ namespace :mruby do
 
   desc "custom config build mruby"
   task :custom_build do
-    sh "cd #{MRUBY_DIR} && rake MRUBY_CONFIG=#{APP_NAME}_config"
+    if file_content_change?(MRUBY_BUILD_CONFIG, "#{MRUBY_DIR}/build_config/#{APP_NAME}_config.rb")
+      sh "cd #{MRUBY_DIR} && rake MRUBY_CONFIG=#{APP_NAME}_config"
+    end
   end
 
 end
@@ -122,8 +124,8 @@ task :build_merge => [:init_build] do
 end
 
 desc "run program"
-task :run => [:cache_merge, :"mruby:build"] do
-  sh "#{MRUBY} build/main.rb"
+task :run => [:cache_merge, :"mruby:custom_build"] do
+  sh "#{MRUBY} #{CACHE_DIR}/main.rb"
 end
 
 desc "build to c code"
