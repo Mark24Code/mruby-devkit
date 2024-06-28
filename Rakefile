@@ -1,28 +1,26 @@
 require 'digest/md5'
 
-MRUBY_NAME = "3.3.0"
+MRUBY_VERSION = "3.3.0"
 
 PROJECT_DIR = "./"
-COMPILER_DIR = "./mruby"
+MRUBY_REPO_DIR = "./mruby"
 SOURCE_DIR = "./src"
 SOURCE_LIB_DIR = "./src/lib"
 BUILD_DIR = "./build"
 CACHE_DIR = "./.cache"
 DOCKER_DIR = "./docker"
 
-MRUBY_URL = "https://github.com/mruby/mruby/archive/#{MRUBY_NAME}.zip"
-MRUBY_DIR = "#{COMPILER_DIR}/#{MRUBY_NAME}"
-MRUBY_BIN = "#{MRUBY_DIR}/build/host/bin"
+MRUBY_URL = "https://github.com/mruby/mruby/archive/#{MRUBY_VERSION}.zip"
+MRUBY_DIR = "#{MRUBY_REPO_DIR}/#{MRUBY_VERSION}"
+MRUBY_BIN_DIR = "#{MRUBY_DIR}/build/host/bin"
 MRUBY = "#{MRUBY_DIR}/build/host/bin/mruby"
 MRBC = "#{MRUBY_DIR}/build/host/bin/mrbc"
-MRUBY_LIB = "#{MRUBY_DIR}/build/host/lib"
-MRUBY_INCLUDE = "#{MRUBY_DIR}/build/host/include"
+MRUBY_LIB_DIR = "#{MRUBY_DIR}/build/host/lib"
+MRUBY_INCLUDE_DIR = "#{MRUBY_DIR}/build/host/include"
 
 MRUBY_BUILD_CONFIG = "./mruby.conf.rb"
-MGEM_SPEC = "./conf.rb"
 
-PKG_C_NAME = "code_wrapper"
-MGEM_BIN_SAVE_DIR = "#{MRUBY_DIR}/examples/mrbgems"
+CODE_WRAPPER_NAME = "code_wrapper"
 
 APP_NAME = "app"
 
@@ -63,19 +61,19 @@ end
 namespace :mruby do
   desc "download mruby"
   task :download do
-    if !File.exist?("#{MRUBY_BIN}")
+    if !File.exist?("#{MRUBY_BIN_DIR}")
       sh "rm -rf .tmp ; rm -rf #{MRUBY_DIR}"
-      sh "mkdir .tmp; mkdir -p #{COMPILER_DIR}"
-      sh "wget -O .tmp/#{MRUBY_NAME}.zip #{MRUBY_URL}"
-      sh "unzip -x ./.tmp/#{MRUBY_NAME}.zip -d ./.tmp"
-      sh "mv ./.tmp/mruby-#{MRUBY_NAME} #{MRUBY_DIR}"
+      sh "mkdir .tmp; mkdir -p #{MRUBY_REPO_DIR}"
+      sh "wget -O .tmp/#{MRUBY_VERSION}.zip #{MRUBY_URL}"
+      sh "unzip -x ./.tmp/#{MRUBY_VERSION}.zip -d ./.tmp"
+      sh "mv ./.tmp/mruby-#{MRUBY_VERSION} #{MRUBY_DIR}"
       sh "rm -rf .tmp "
     end
   end
 
   desc "build mruby"
   task :build do
-    if !File.exist?("#{MRUBY_BIN}/mruby")
+    if !File.exist?("#{MRUBY_BIN_DIR}/mruby")
       sh "cd #{MRUBY_DIR} && rake"
     end
   end
@@ -89,7 +87,7 @@ namespace :mruby do
 
   desc "init"
   task :init => [:"mruby:download"] do
-    puts "init mruby #{MRUBY_NAME}"
+    puts "init mruby #{MRUBY_VERSION}"
   end
 
   desc "custom config build mruby"
@@ -132,7 +130,7 @@ task :build_to_c do
 
   CODE_ENTER = "__ruby_code"
 
-  sh "#{MRBC} -B#{CODE_ENTER} #{BUILD_DIR}/main.rb && mv #{BUILD_DIR}/main.c #{BUILD_DIR}/#{PKG_C_NAME}.c"
+  sh "#{MRBC} -B#{CODE_ENTER} #{BUILD_DIR}/main.rb && mv #{BUILD_DIR}/main.c #{BUILD_DIR}/#{CODE_WRAPPER_NAME}.c"
 
   File.open("#{BUILD_DIR}/main.c", "w") do |f|
 template = <<-CODE
@@ -160,9 +158,9 @@ end
 
 desc "build program"
 task :build => [:"mruby:init", :"mruby:build_config", :"mruby:custom_build", :build_merge, :build_to_c] do
-  sh "cc -std=c99 -I#{MRUBY_INCLUDE} #{BUILD_DIR}/*.c -o #{BUILD_DIR}/#{APP_NAME} #{MRUBY_LIB}/libmruby.a -lm"
+  sh "cc -std=c99 -I#{MRUBY_INCLUDE_DIR} #{BUILD_DIR}/*.c -o #{BUILD_DIR}/#{APP_NAME} #{MRUBY_LIB_DIR}/libmruby.a -lm"
   sh "mkdir -p #{BUILD_DIR}/portable/"
-  sh "cp #{MRUBY_BIN}/mruby #{BUILD_DIR}/portable/"
+  sh "cp #{MRUBY_BIN_DIR}/mruby #{BUILD_DIR}/portable/"
   sh "mv #{BUILD_DIR}/main.rb #{BUILD_DIR}/portable/"
   sh "rm -f #{BUILD_DIR}/*.h; rm -f #{BUILD_DIR}/*.c; rm -f #{BUILD_DIR}/*.rb"
   sh "tar -czvf app.tar.gz #{BUILD_DIR}"
@@ -171,7 +169,7 @@ end
 
 desc "clean"
 task :clean do
-  sh "rm -rf #{COMPILER_DIR} && mkdir #{COMPILER_DIR}"
+  sh "rm -rf #{MRUBY_REPO_DIR} && mkdir #{MRUBY_REPO_DIR}"
   sh "rm -rf #{BUILD_DIR} && mkdir #{BUILD_DIR}"
   sh "rm -rf #{CACHE_DIR} && mkdir #{CACHE_DIR}"
 end
