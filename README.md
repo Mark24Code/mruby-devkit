@@ -83,6 +83,17 @@ lib 中适合存放拆分的多文件。
 
 * 可以 fork 仓库在  Github Action 运行结果下可以看到构建产物。
 
+Github Action 提供免费的 Runner
+* Windows
+* MacOS AMD64
+* MacOS ARM64
+* Ubuntu AMD64
+
+如果你想获得 Linux aarch64 需要自建 Runner
+所以你需要修改 [.github/workflows/raspbian-aarch64.yml](https://github.com/Mark24Code/mruby-devkit/blob/main/.github/workflows/raspbian-aarch64.yml) 使用自己的支持 aarch64 的runner。
+
+
+
 ## 4. 内置 Rake 命令
 
 rake -T 查看可用命令
