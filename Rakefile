@@ -18,6 +18,13 @@ MRBC = "#{MRUBY_DIR}/build/host/bin/mrbc"
 MRUBY_LIB = "#{MRUBY_DIR}/build/host/lib"
 MRUBY_INCLUDE = "#{MRUBY_DIR}/build/host/include"
 
+WASM_MRUBY_BIN = "#{MRUBY_DIR}/build/emscripten/bin"
+WASM_MRUBY = "#{MRUBY_DIR}/build/emscripten/bin/mruby"
+WASM_MRBC = "#{MRUBY_DIR}/build/emscripten/bin/mrbc"
+WASM_MRUBY_LIB = "#{MRUBY_DIR}/build/emscripten/lib"
+WASM_MRUBY_INCLUDE = "#{MRUBY_DIR}/build/emscripten/include"
+
+
 MRUBY_BUILD_CONFIG = "./mruby.conf.rb"
 MGEM_SPEC = "./conf.rb"
 
@@ -164,8 +171,19 @@ task :build => [:"mruby:init", :"mruby:build_config", :"mruby:custom_build", :bu
   sh "mkdir -p #{BUILD_DIR}/portable/"
   sh "cp #{MRUBY_BIN}/mruby #{BUILD_DIR}/portable/"
   sh "mv #{BUILD_DIR}/main.rb #{BUILD_DIR}/portable/"
-  sh "rm -f #{BUILD_DIR}/*.h; rm -f #{BUILD_DIR}/*.c; rm -f #{BUILD_DIR}/*.rb"
+  # sh "rm -f #{BUILD_DIR}/*.h; rm -f #{BUILD_DIR}/*.c; rm -f #{BUILD_DIR}/*.rb"
   sh "tar -czvf app.tar.gz #{BUILD_DIR}"
+end
+
+desc "build wasm"
+task :wasm => [:"mruby:init", :"mruby:build_config", :"mruby:custom_build", :build_merge, :build_to_c] do
+  # sh "cc -std=c99 -I#{MRUBY_INCLUDE} #{BUILD_DIR}/*.c -o #{BUILD_DIR}/#{APP_NAME} #{MRUBY_LIB}/libmruby.a -lm"
+  sh "emcc -s WASM=1 -Os -I #{WASM_MRUBY_INCLUDE} #{BUILD_DIR}/*.c #{WASM_MRUBY_LIB}/libmruby.a -lm -o #{BUILD_DIR}/#{APP_NAME}.js --closure 1"
+  # sh "mkdir -p #{BUILD_DIR}/portable/"
+  # sh "cp #{MRUBY_BIN}/mruby #{BUILD_DIR}/portable/"
+  # sh "mv #{BUILD_DIR}/main.rb #{BUILD_DIR}/portable/"
+  # sh "rm -f #{BUILD_DIR}/*.h; rm -f #{BUILD_DIR}/*.c; rm -f #{BUILD_DIR}/*.rb"
+  # sh "tar -czvf app.tar.gz #{BUILD_DIR}"
 end
 
 
