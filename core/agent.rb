@@ -36,7 +36,7 @@ module Utils
   end
 end
 
-class Flow
+class Agent
   include Utils
 
   def initialize(app_name:, platform: "host", debug: false)
@@ -67,8 +67,8 @@ class Flow
 
     @custom_build_config_name = @platform
     @custom_build_config_file = @config_dir + "#{@platform}.rb"
-    @copied_custom_build_config_name = "#{@app_name}_#{@custom_build_config_name}"
-    @copied_custom_build_config_file = @mruby_build_config_dir + "#{@mruby_custom_config_name}.rb"
+    @copied_custom_build_config_name = "#{@app_name}_#{@platform}"
+    @copied_custom_build_config_file = @mruby_build_config_dir + "#{@copied_custom_build_config_name}.rb"
 
     @code_wrapper_name = "_code_wrapper"
 
@@ -119,19 +119,14 @@ class Flow
     end
   end
 
-  def mruby_build(config_name = nil)
-    platform = ""
-    if !platform
-      shell "cd #{@mruby_dir} && rake"
-    else
-      shell "cd #{@mruby_dir} && rake MRUBY_CONFIG=#{config_name}"
-    end
+  def mruby_build
+    shell "cd #{@mruby_dir} && rake MRUBY_CONFIG=#{@copied_custom_build_config_name}"
   end
 
-  def update_config(config_name)
+  def copy_config
     shell_cp @custom_build_config_file, @copied_custom_build_config_file
   end
 end
 
-fl = Flow.new(app_name: "app", platform: "host", debug: false)
-fl.mruby_download
+# fl = Flow.new(app_name: "app", platform: "host", debug: false)
+# fl.mruby_download
