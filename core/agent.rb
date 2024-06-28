@@ -126,7 +126,24 @@ class Agent
   def copy_config
     shell_cp @custom_build_config_file, @copied_custom_build_config_file
   end
+
+  def clean_dir(dir_path)
+    shell_rm dir_path
+  end
+
+  [:mruby, :cache, :build].each do | target |
+    define_method("clean_#{target}") {
+      clean_dir instance_variable_get("#{target}_dir")
+    }
+  end
+
+  def clean_all
+    clean_dir @mruby_dir
+    clean_dir @cache_dir
+    clean_dir @build_dir
+  end
 end
 
-# fl = Flow.new(app_name: "app", platform: "host", debug: false)
+fl = Agent.new(app_name: "app", platform: "host", debug: false)
 # fl.mruby_download
+puts fl.methods - Object.methods

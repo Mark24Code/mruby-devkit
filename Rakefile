@@ -10,6 +10,10 @@ agent = Agent.new(
 )
 
 namespace :mruby do
+  task :init do
+    agent.clean_mruby
+  end
+
   desc "download mruby"
   task :download do
     agent.mruby_download
@@ -24,24 +28,6 @@ namespace :mruby do
   task :build => [:copy_config] do
     agent.mruby_build
   end
-
-  # desc "replace mruby build config"
-  # task :build_config do
-  #   if file_content_change?(MRUBY_BUILD_CONFIG, "#{MRUBY_DIR}/build_config/#{APP_NAME}_config.rb")
-  #     sh "cp #{MRUBY_BUILD_CONFIG} #{MRUBY_DIR}/build_config/#{APP_NAME}_config.rb"
-  #   end
-  # end
-
-  # desc "init"
-  # task :init => [:"mruby:download"] do
-  #   puts "init mruby #{MRUBY_VERSION}"
-  # end
-
-  # desc "custom config build mruby"
-  # task :custom_build do
-  #   sh "cd #{MRUBY_DIR} && rake MRUBY_CONFIG=#{APP_NAME}_config"
-  # end
-
 end
 
 
