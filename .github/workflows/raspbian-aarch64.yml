@@ -34,5 +34,5 @@ jobs:
       - name: "Upload Artifact- linux aarch64"
         uses: actions/upload-artifact@v4
         with:
-          name: app-${{ env.PKG_DATE }}-${{env.PLATFORM}}-${{env.ARCHITECTURES}}.tar.gz
+          name: app-${{ env.PKG_DATE }}-${{env.PLATFORM}}-${{env.ARCHITECTURES}}
           path: build
