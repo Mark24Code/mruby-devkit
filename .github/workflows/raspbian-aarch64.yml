@@ -35,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-${{ env.PKG_DATE }}-${{env.PLATFORM}}-${{env.ARCHITECTURES}}.tar.gz
-          path: app.tar.gz
+          path: build
