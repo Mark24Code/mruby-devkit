@@ -8,6 +8,23 @@ MRuby Devkit 是一个开箱即用的脚手架。 基于 MRuby 将你的 Ruby �
 
 > —— 灵感来自于 Golang 可以编译为二进制可执行文件的迷人特性。
 
+---
+
+# 平台：
+
+* MacOS
+- x86_64 ✅
+- aarch64 ✅
+
+* Debian/Ubuntu/Mint Linux
+- x86_64 ✅
+- aarch64 ✅
+
+* WebAssembly ✅
+
+
+---
+
 # 一、使用约定
 
 ## 前置运行环境
@@ -99,6 +116,7 @@ rake -T 查看可用命令
 ➜  build git:(main) rake -T
 rake build       # build program
 rake build:wasm  # build wasm program
+rake release     # release package
 rake run         # run program
 rake run:wasm    # run wasm program
 ```
@@ -114,16 +132,5 @@ rake run:wasm    # run wasm program
 - [x] 自动初始化
 - [x] 支持 WebAssembly
 
----
 
-# 平台：
 
-MacOS
-
-- AMD64 ✅
-- ARM64 ✅
-
-Debian/Ubuntu/Mint Linux
-
-- AMD64 ✅
-- ARM64 ✅
