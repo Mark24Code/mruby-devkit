@@ -18,34 +18,42 @@ class WasmAgent < BaseAgent
     shell_clean @build_dir
     @host_agent.pack_code(@build_dir)
     @host_agent.build_to_c_code
-    build_code
+    build_code @build_dir
     build_clean
   end
 
-  def web_template
-    File.open("#{@build_dir}/main.c", "w") do |f|
+  def generate_web_template(dir_path)
+    File.open("#{dir_path}/index.html", "w") do |f|
     template = <<-CODE
-    #include <mruby.h>
-    #include <mruby/irep.h>
-    extern const uint8_t #{@code_wrapper_name}[];
-
-    int
-    main(void)
-    {
-      mrb_state *mrb = mrb_open();
-      if (!mrb) { /* handle error */ }
-      mrb_load_irep(mrb, #{@code_wrapper_name});
-      mrb_close(mrb);
-      return 0;
-    }
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+    <h1>Hello World</h1>
+    <script src="./app.js"></script>
+</body>
+</html>
     CODE
 
-        f.puts template
-        end
+    f.puts template
+    end
   end
 
-  def build_code
-    shell "emcc -s WASM=1 -Os -I #{@mruby_include_dir} #{@build_dir}/*.c #{@mruby_lib_dir}/libmruby.a -lm -o #{@build_dir}/#{@app_name}.js --closure 1"
+  def serve(dir_path)
+    system("ruby -run -e httpd #{dir_path}")
+  end
+
+  def run
+    build
+    serve @build_dir
+  end
+
+  def build_code(dir_path)
+    shell "emcc -s WASM=1 -Os -I #{@mruby_include_dir} #{dir_path}/*.c #{@mruby_lib_dir}/libmruby.a -lm -o #{dir_path}/#{@app_name}.js --closure 1"
+    generate_web_template(dir_path)
   end
 end

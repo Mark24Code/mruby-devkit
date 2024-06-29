@@ -19,15 +19,25 @@ namespace :mruby do
       host_agent.clean_all
       host_agent.mruby_download
     end
-    host_agent.mruby_config
-    if !host_agent.mruby_build_dir.exist?
+
+    config_changed = host_agent.config_changed
+    if config_changed
+      host_agent.mruby_config
+    end
+
+    if !host_agent.mruby_build_dir.exist? || config_changed
       host_agent.mruby_build
     end
   end
 
   task :init_wasm => [:"mruby:init"] do
-    wasm_agent.mruby_config
-    if !wasm_agent.mruby_build_dir.exist?
+
+    config_changed = wasm_agent.config_changed
+    if config_changed
+      wasm_agent.mruby_config
+    end
+
+    if !wasm_agent.mruby_build_dir.exist? || config_changed
       wasm_agent.mruby_build
     end
   end
@@ -46,6 +56,11 @@ end
 desc "build program"
 task :build => [:"mruby:init"] do
   host_agent.build
+end
+
+desc "run wasm program"
+task :"run:wasm" => [:"mruby:init_wasm"] do
+  wasm_agent.run
 end
 
 desc "build wasm program"

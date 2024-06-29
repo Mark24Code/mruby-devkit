@@ -2,11 +2,13 @@ require 'pathname'
 require_relative "./utils"
 
 class BaseAgent
+
   include Utils
 
   attr_accessor :platform
   attr_reader :mruby_dir, :cache_dir, :build_dir, :mruby_build_dir
   attr_reader :mruby, :mrbc
+  attr_reader :custom_build_config_file, :copied_custom_build_config_file
   def initialize(app_name:, debug: false)
     @app_name = app_name
 
@@ -102,6 +104,11 @@ class BaseAgent
     shell_cp @custom_build_config_file, @copied_custom_build_config_file
   end
 
+  def config_changed
+    file_content_change? @custom_build_config_file, @copied_custom_build_config_file
+  end
+
+
   def clean_dir(dir_path)
     shell_rm dir_path
   end
@@ -150,12 +157,10 @@ CODE
     end
   end
 
-  def wrap_code
-
-  end
 
   def run
-    pack_code(@cache_dir)
+    shell_clean @cache_dir
+    pack_code @cache_dir
     shell "#{@mruby} #{@cache_dir}/main.rb"
   end
 

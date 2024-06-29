@@ -1,5 +1,6 @@
 MRuby::Build.new do |conf|
   toolchain :gcc
+  conf.gem :mgem => 'mruby-os'
   conf.gembox 'default'
 end
 
