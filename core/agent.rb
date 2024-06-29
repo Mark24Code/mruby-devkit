@@ -39,6 +39,8 @@ end
 class Agent
   include Utils
 
+  attr_reader :mruby_dir, :cache_dir, :build_dir
+  attr_reader :mruby, :mrbc
   def initialize(app_name:, platform: "host", debug: false)
     @app_name = app_name
 
@@ -57,8 +59,8 @@ class Agent
     @mruby_url = "https://github.com/mruby/mruby/archive/#{@mruby_version}.zip"
     @mruby_dir = @mruby_repo_dir + @mruby_version
 
-    @mruby_build_dir = @mruby_dir + "build"
-    @mruby_bin_dir = @mruby_build_dir + @platform + "bin"
+    @mruby_build_dir = @mruby_dir + "build" +  @platform
+    @mruby_bin_dir = @mruby_build_dir + "bin"
     @mruby = @mruby_bin_dir + "mruby"
     @mrbc = @mruby_bin_dir + "mrbc"
     @mruby_include_dir = @mruby_build_dir + "include"
@@ -133,17 +135,74 @@ class Agent
 
   [:mruby, :cache, :build].each do | target |
     define_method("clean_#{target}") {
-      clean_dir instance_variable_get("#{target}_dir")
+      shell_clean instance_variable_get("@#{target}_dir")
     }
   end
 
   def clean_all
-    clean_dir @mruby_dir
-    clean_dir @cache_dir
-    clean_dir @build_dir
+    [:mruby, :cache, :build].each do | target |
+      __send__("clean_#{target}")
+    end
+  end
+
+  def pack_code(dir_name)
+    # TODO 根据依赖关系合并
+    rbfiles = Dir.glob("#{@source_lib_dir}/*.rb")
+    shell "cat #{rbfiles.join(" ")} #{@source_dir}/main.rb > #{dir_name}/main.rb"
+  end
+
+  def build_to_c_code
+
+    shell "#{@mrbc} -B#{@code_wrapper_name} #{@build_dir}/main.rb && mv #{@build_dir}/main.c #{@build_dir}/#{@code_wrapper_name}.c"
+
+  File.open("#{@build_dir}/main.c", "w") do |f|
+template = <<-CODE
+#include <mruby.h>
+#include <mruby/irep.h>
+extern const uint8_t #{@code_wrapper_name}[];
+
+int
+main(void)
+{
+  mrb_state *mrb = mrb_open();
+  if (!mrb) { /* handle error */ }
+  mrb_load_irep(mrb, #{@code_wrapper_name});
+  mrb_close(mrb);
+  return 0;
+}
+
+CODE
+
+    f.puts template
+    end
+  end
+
+  def wrap_code
+
+  end
+
+  def run
+    pack_code(@cache_dir)
+    shell "#{@mruby} #{@cache_dir}/main.rb"
+  end
+
+  def build_code
+    shell "cc -std=c99 -I#{@mruby_include_dir} #{@build_dir}/*.c -o #{@build_dir}/#{@app_name} #{@mruby_lib_dir}/libmruby.a -lm"
+  end
+
+  def build
+    pack_code(@build_dir)
+    build_to_c_code
+    build_code
   end
 end
 
-fl = Agent.new(app_name: "app", platform: "host", debug: false)
+class HostAgent < Agent
+  def build_code
+    shell "cc -std=c99 -I#{@mruby_include_dir} #{@build_dir}/*.c -o #{@build_dir}/#{@app_name} #{@mruby_lib_dir}/libmruby.a -lm"
+  end
+end
+
+# fl = Agent.new(app_name: "app", platform: "host", debug: false)
 # fl.mruby_download
-puts fl.methods - Object.methods
+# puts fl.metclearhods - Object.methods
