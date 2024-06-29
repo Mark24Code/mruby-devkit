@@ -69,7 +69,7 @@ task :"build:wasm" => [:"mruby:init_wasm"] do
 end
 
 desc "release package"
-task :release do
+task :release => [:"build"] do
   host_agent.release
 end
 

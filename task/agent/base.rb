@@ -17,7 +17,8 @@ class BaseAgent
     @mruby_repo_dir = @proj + "mruby"
     @source_dir = @proj +  "src"
     @source_lib_dir = @proj +  "src" + "lib"
-    @build_dir = @proj +  "build"
+    @build_name = "build"
+    @build_dir = @proj +  @build_name
     @cache_dir = @proj +  ".cache"
     @config_dir = @proj +  "config"
     @temp_dir = @proj +  ".tmp"
@@ -28,7 +29,7 @@ class BaseAgent
     @mruby_url = "https://github.com/mruby/mruby/archive/#{@mruby_version}.zip"
     @mruby_dir = @mruby_repo_dir + @mruby_version
 
-    @mruby_build_dir = @mruby_dir + "build" +  @platform
+    @mruby_build_dir = @mruby_dir + @build_name +  @platform
     @mruby_bin_dir = @mruby_build_dir + "bin"
     @mruby = @mruby_bin_dir + "mruby"
     @mrbc = @mruby_bin_dir + "mrbc"
@@ -181,7 +182,6 @@ CODE
   end
 
   def release
-    build
-    shell "tar -czvf app.tar.gz #{@build_dir}"
+    shell "tar -czvf #{@app_name}.tar.gz ./#{@build_name}"
   end
 end
