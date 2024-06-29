@@ -179,4 +179,9 @@ CODE
     build_code
     build_clean
   end
+
+  def release
+    build
+    shell "tar -czvf app.tar.gz #{@build_dir}"
+  end
 end

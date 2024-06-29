@@ -68,6 +68,10 @@ task :"build:wasm" => [:"mruby:init_wasm"] do
   wasm_agent.build
 end
 
+desc "release package"
+task :release do
+  host_agent.release
+end
 
 task :default do
   system("rake -T")
