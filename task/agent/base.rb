@@ -5,9 +5,9 @@ class BaseAgent
   include Utils
 
   attr_accessor :platform
-  attr_reader :mruby_dir, :cache_dir, :build_dir
+  attr_reader :mruby_dir, :cache_dir, :build_dir, :mruby_build_dir
   attr_reader :mruby, :mrbc
-  def initialize(app_name:, debug: false)
+  def initialize(app_name:, platform: "host", debug: false)
     @app_name = app_name
 
     @proj = Pathname.new(__dir__).parent.parent # TODO 变更需要修改
@@ -19,7 +19,7 @@ class BaseAgent
     @cache_dir = @proj +  ".cache"
     @config_dir = @proj +  "config"
     @temp_dir = @proj +  ".tmp"
-    @platform = "host"
+    @platform = platform
 
     @mruby_version = "3.3.0"
     @mruby_url = "https://github.com/mruby/mruby/archive/#{@mruby_version}.zip"
@@ -80,8 +80,8 @@ class BaseAgent
       shell_dir @temp_dir
       shell_dir @mruby_repo_dir
       mruby_file = @temp_dir + @mruby_version
-      shell "curl -L -C - -o #{mruby_file}.zip #{@mruby_url}"
-      shell "unzip -x #{mruby_file}.zip -d #{@temp_dir} > /dev/null 2>&1"
+      shell "wget -O #{mruby_file}.zip #{@mruby_url}"
+      shell "unzip -x #{mruby_file}.zip -d #{@temp_dir} #> /dev/null 2>&1"
       shell_mv @temp_dir+"mruby-#{@mruby_version}", @mruby_dir
       shell_rm @temp_dir
     end

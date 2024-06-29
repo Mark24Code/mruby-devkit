@@ -1,5 +1,5 @@
 module Devkit
   AppName = "app"
-  Platform = "host" # "wasm"
+  Platform = "host" # "host", "wasm"
   Debug = false
 end
