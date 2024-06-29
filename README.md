@@ -12,16 +12,17 @@ MRuby Devkit 是一个开箱即用的脚手架。 基于 MRuby 将你的 Ruby �
 
 # 平台：
 
-* MacOS
-- x86_64 ✅
-- aarch64 ✅
+- MacOS
 
-* Debian/Ubuntu/Mint Linux
-- x86_64 ✅
-- aarch64 ✅
+* x86_64 ✅
+* aarch64 ✅
 
-* WebAssembly ✅
+- Debian/Ubuntu/Mint Linux
 
+* x86_64 ✅
+* aarch64 ✅
+
+- WebAssembly ✅
 
 ---
 
@@ -35,7 +36,10 @@ MacOS、Linux
 - Make
 - Git
 - Ruby3
+
   - Rake 安装 `gem install rake`
+
+- emscripten (如果需要转 webassembly)
 
 ## 约定
 
@@ -98,14 +102,15 @@ lib 中适合存放拆分的多文件。
 - 可以 fork 仓库在 Github Action 运行结果下可以看到构建产物。
 
 Github Action 提供免费的 Runner
-* Windows
-* MacOS AMD64
-* MacOS ARM64
-* Ubuntu AMD64
 
-如果你想获得 Linux aarch64 需要自建 Runner
-所以你需要修改 [.github/workflows/raspbian-aarch64.yml](https://github.com/Mark24Code/mruby-devkit/blob/main/.github/workflows/raspbian-aarch64.yml) 使用自己的支持 aarch64 的runner。
+- Windows
+- MacOS AMD64
+- MacOS ARM64
+- Ubuntu AMD64
 
+如果你想获得 Linux aarch64 需要自建 Runner。
+
+你需要修改 [.github/workflows/raspbian-aarch64.yml](https://github.com/Mark24Code/mruby-devkit/blob/main/.github/workflows/raspbian-aarch64.yml) 使用自己的支持 aarch64 的 runner。
 
 ### 3.1 WebAssembly 的说明
 
@@ -117,6 +122,10 @@ rake build:wasm  # build wasm program
 提供两个命令支持 转换为 WebAssembly，注意 WebAssembly 并不支持所有 mgem，需要自己根据情况来编写。
 纯 Ruby 的逻辑 Wasm 支持。
 
+=======
+所以你需要修改 [.github/workflows/raspbian-aarch64.yml](https://github.com/Mark24Code/mruby-devkit/blob/main/.github/workflows/raspbian-aarch64.yml) 使用自己的支持 aarch64 的 runner。
+
+> > > > > > > 7055a3e (update: readme)
 
 ## 4. 内置 Rake 命令
 
@@ -141,6 +150,4 @@ rake run:wasm    # run wasm program
 - [x] build 命令
 - [x] 自动初始化
 - [x] 支持 WebAssembly
-
-
-
+- [ ] require_relative
