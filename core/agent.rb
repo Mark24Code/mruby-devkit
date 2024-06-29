@@ -125,7 +125,7 @@ class Agent
     shell "cd #{@mruby_dir} && rake MRUBY_CONFIG=#{@copied_custom_build_config_name}"
   end
 
-  def copy_config
+  def mruby_config
     shell_cp @custom_build_config_file, @copied_custom_build_config_file
   end
 

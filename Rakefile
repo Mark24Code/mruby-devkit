@@ -14,7 +14,7 @@ namespace :mruby do
   task :init do
     agent.clean_all
     agent.mruby_download
-    agent.copy_config
+    agent.mruby_config
     agent.mruby_build
   end
 
@@ -24,12 +24,12 @@ namespace :mruby do
   end
 
   desc "copy custom build_config to mruby"
-  task :copy_config do
-    agent.copy_config
+  task :mruby_config do
+    agent.mruby_config
   end
 
   desc "build mruby"
-  task :build => [:copy_config] do
+  task :build => [:mruby_config] do
     agent.mruby_build
   end
 end
