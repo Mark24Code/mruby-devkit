@@ -7,7 +7,7 @@ class BaseAgent
   attr_accessor :platform
   attr_reader :mruby_dir, :cache_dir, :build_dir, :mruby_build_dir
   attr_reader :mruby, :mrbc
-  def initialize(app_name:, platform: "host", debug: false)
+  def initialize(app_name:, debug: false)
     @app_name = app_name
 
     @proj = Pathname.new(__dir__).parent.parent # TODO 变更需要修改
@@ -19,7 +19,8 @@ class BaseAgent
     @cache_dir = @proj +  ".cache"
     @config_dir = @proj +  "config"
     @temp_dir = @proj +  ".tmp"
-    @platform = platform
+
+    @platform = set_platform
 
     @mruby_version = "3.3.0"
     @mruby_url = "https://github.com/mruby/mruby/archive/#{@mruby_version}.zip"
@@ -41,11 +42,17 @@ class BaseAgent
     @code_wrapper_name = "_code_wrapper"
 
     @debug = debug
-
+    init_hook
   end
 
-  def shell(command, log = false)
-    if log || @debug
+  def init_hook
+  end
+
+  def set_platform
+  end
+
+  def shell(command, debug = false)
+    if debug || @debug
       puts "sh: #{command}"
     end
     system(command)
@@ -161,6 +168,7 @@ CODE
   end
 
   def build
+    shell_clean @build_dir
     pack_code(@build_dir)
     build_to_c_code
     build_code
