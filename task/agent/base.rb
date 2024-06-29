@@ -1,50 +1,16 @@
 require 'pathname'
+require_relative "./utils"
 
-module Utils
-  def content_md5(file_path)
-    File.open(file_path, 'rb') do |file|
-      md5 = Digest::MD5.new
-      md5 << file.read
-      md5.hexdigest
-    end
-  end
-
-  def file_content_change?(file1, file2)
-    if !File.exist?(file1) || !File.exist?(file2)
-      return true
-    end
-    hash1 = content_md5(file1)
-    hash2 = content_md5(file2)
-    return !(hash1 == hash2)
-  end
-
-  def osname
-    case RUBY_PLATFORM.downcase
-    when /darwin/
-     "darwin"
-    when /linux/
-     "linux"
-    when /mswin|win32|mingw|cygwin/
-     "win"
-    else
-      nil
-    end
-  end
-
-  def dep_tools
-    ["curl, unzip"]
-  end
-end
-
-class Agent
+class BaseAgent
   include Utils
 
+  attr_accessor :platform
   attr_reader :mruby_dir, :cache_dir, :build_dir
   attr_reader :mruby, :mrbc
-  def initialize(app_name:, platform: "host", debug: false)
+  def initialize(app_name:, debug: false)
     @app_name = app_name
 
-    @proj = Pathname.new(__dir__).parent
+    @proj = Pathname.new(__dir__).parent.parent # TODO 变更需要修改
 
     @mruby_repo_dir = @proj + "mruby"
     @source_dir = @proj +  "src"
@@ -53,7 +19,7 @@ class Agent
     @cache_dir = @proj +  ".cache"
     @config_dir = @proj +  "config"
     @temp_dir = @proj +  ".tmp"
-    @platform = platform
+    @platform = "host"
 
     @mruby_version = "3.3.0"
     @mruby_url = "https://github.com/mruby/mruby/archive/#{@mruby_version}.zip"
@@ -186,6 +152,10 @@ CODE
     shell "#{@mruby} #{@cache_dir}/main.rb"
   end
 
+  def build_clean
+    shell "rm -rf #{@build_dir}/*.h; rm -rf #{@build_dir}/*.rb; rm -rf #{@build_dir}/*.c"
+  end
+
   def build_code
     shell "cc -std=c99 -I#{@mruby_include_dir} #{@build_dir}/*.c -o #{@build_dir}/#{@app_name} #{@mruby_lib_dir}/libmruby.a -lm"
   end
@@ -194,15 +164,6 @@ CODE
     pack_code(@build_dir)
     build_to_c_code
     build_code
+    build_clean
   end
 end
-
-class HostAgent < Agent
-  def build_code
-    shell "cc -std=c99 -I#{@mruby_include_dir} #{@build_dir}/*.c -o #{@build_dir}/#{@app_name} #{@mruby_lib_dir}/libmruby.a -lm"
-  end
-end
-
-# fl = Agent.new(app_name: "app", platform: "host", debug: false)
-# fl.mruby_download
-# puts fl.metclearhods - Object.methods

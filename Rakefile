@@ -1,12 +1,11 @@
-require "./core/agent"
+require_relative "./config"
+require_relative "./task/agent/#{Devkit::Platform}"
 
-AppName = "app"
-Platform = "host"
-
-agent = HostAgent.new(
-  app_name: AppName,
-  platform: Platform,
-  debug: false
+platform = Devkit::Platform
+agent_klass = Object.const_get("#{platform.capitalize}Agent")
+agent = agent_klass.new(
+  app_name: Devkit::AppName,
+  debug: Devkit::Debug
 )
 
 namespace :mruby do
@@ -18,17 +17,17 @@ namespace :mruby do
     agent.mruby_build
   end
 
-  desc "download mruby"
+  # desc "download mruby"
   task :download do
     agent.mruby_download
   end
 
-  desc "copy custom build_config to mruby"
+  # desc "copy custom build_config to mruby"
   task :mruby_config do
     agent.mruby_config
   end
 
-  desc "build mruby"
+  # desc "build mruby"
   task :build => [:mruby_config] do
     agent.mruby_build
   end
