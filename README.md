@@ -107,6 +107,16 @@ Github Action 提供免费的 Runner
 所以你需要修改 [.github/workflows/raspbian-aarch64.yml](https://github.com/Mark24Code/mruby-devkit/blob/main/.github/workflows/raspbian-aarch64.yml) 使用自己的支持 aarch64 的runner。
 
 
+### 3.1 WebAssembly 的说明
+
+```
+rake run:wasm    # run wasm program
+rake build:wasm  # build wasm program
+```
+
+提供两个命令支持 转换为 WebAssembly，注意 WebAssembly 并不支持所有 mgem，需要自己根据情况来编写。
+纯 Ruby 的逻辑 Wasm 支持。
+
 
 ## 4. 内置 Rake 命令
 
